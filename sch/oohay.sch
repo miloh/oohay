@@ -55,3 +55,16 @@ symversion=0.1
 T 35100 63400 5 10 1 1 0 0 1
 value=100uH
 }
+C 34200 56700 1 0 0 cvstitleblock-1.sym
+{
+T 34800 57100 5 10 1 1 0 0 1
+date=$Date$
+T 38700 57100 5 10 1 1 0 0 1
+rev=$Revision$
+T 40200 56800 5 10 1 1 0 0 1
+auth=$Author$
+T 35000 57400 5 10 1 1 0 0 1
+fname=$Source$
+T 38000 57800 5 14 1 1 0 4 1
+title=TITLE
+}
