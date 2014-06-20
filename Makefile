@@ -113,7 +113,7 @@ renum : $(NAME).sch
 	gnetlist -g partslist3 -o $@ $<
 
 
-.PHONY gerbers
+.PHONY : gerbers
 # rule for making generic gerbers
 gerbers :$(NAME).pcb  $(NAME).bom
 	rm -rf gerbers
