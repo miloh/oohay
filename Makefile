@@ -1,5 +1,15 @@
 #makefile for gaf-geda
-# parts of this makefile are inspired by Nixotic Design's gEDA-tools Makefile
+
+#
+#makefile for geda
+#'make clean' cleans up backup files 
+#'make projectname.pdf' exports any schematic files in the makefile directory to pdf 
+#and uses shell cmds and assumes git to apply version author date and filename info 
+#'make renum' run refdes_renum on the target.
+#'make gerbers'
+#'make bom' a bom is a list of all parts in the project
+#'make partslist'  a partslist consolidates the parts used in quantity
+## parts of this makefile are inspired by Nixotic Design's gEDA-tools Makefile
 
 # Q: why use git?
 #
@@ -23,6 +33,10 @@
 # gschem and pcb are used to create postscript files  '.ps' 
 # target for making oshpark gerbers
 # target for making custom gerbers
+#the problem with the makefile in this directory is that it is super specific to this project.
+#shouldn't it be a bit generic?
+#'make photo' make render images out of the layout
+#'make layout.pdf' exports any %.pcb in the makefile dir to pdf using the rules  
 
 
 
@@ -31,15 +45,16 @@
 
 # /projectname/ 
 # /projectname/makefile
-# /projectname/*.sch and gafrc
-# /projectaname/gaf-symbols/ 
-# /projectname/gaf-fooptrints/
-# /projectname/*.pcb and gattrib or other pcb specific config
+# /projectname/gafrc
+# /projectname/*.sch 
+# /projectname/*.pcb 
+# /projectname/sym
+# /projectname/fp
+# /projectname/gaf-symbols/    expected  as git submdoule 
+# /projectname/gaf-fooptrints/  expected as git submodule
 
+ 
 
-
-# .PHONY prevents rules from becoming disabled if files exist with the same name 
-.PHONY:  clean 
 # Input DIR using this directory structure cleans things upS
 SCH=sch
 PCB=pcb
@@ -48,27 +63,37 @@ FP=gaf_footprints
 SS=subcircuits
 
 NAME= projectname
+
+# the following vars assume git is being used for version control
+# variables using the Make builtin shell expression/expansion
+# not sure if = is a good assignment operator or if =! or =: would be better
 DATE = $(shell date +"%b-%d-%Y")
 AUTHOR = $(shell git config --global -l | grep user.name | cut -d "=" -f2)
 REV = $(shell git log -1 --format=%h)
 
 
-# target for cleaning up backup files out of project dirs 
+# what follows is a rule for cleaning up backup files out of project dirs 
+# .PHONY prevents rules from becoming disabled if files exist with the same name 
+.PHONY:  clean 
 #basic format of a 'rule' in Make is target : prerequisite
 clean:
 	rm -f *~ *- *.backup *.new.pcb *.png *.bak *.gbr *.cnc
 # this rule has no prerequisite
 
 
+# this one is complex, the 
 #basic format of a 'rule' in Make is target : prerequisite
 %.pdf : %.sch
+# the % is an automatic variable that will expand to represent all files ending with %.sch in this case
 # here the $@ and $< are called  'automatic variables', 
 # $@ is the target and $< is the prerequisite
-	sed -i "s/\(date=\).*/\1$\$(DATE)/" $<
+	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
 	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
 	sed -i "s/\(fname=\).*/\1$@/" $<
 	sed -i "s/\(rev=\).*/\1$\$(REV)/" $<
 	gaf export -o $@ -- $<
+	# danger, we will discard changes to the working directory now.  This assumes that the working dir was clean before make was called -- which is effed.
+	git checkout -- $<
 
 # this following rule conflicts with the rule for schematics.  study make and figure out how to make it work
 #%.pdf : %.pcb
