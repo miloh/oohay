@@ -71,7 +71,6 @@ DATE = $(shell date +"%b-%d-%Y")
 AUTHOR = $(shell git config --global -l | grep user.name | cut -d "=" -f2)
 REV = $(shell git log -1 --format=%h)
 
-
 # what follows is a rule for cleaning up backup files out of project dirs 
 # .PHONY prevents rules from becoming disabled if files exist with the same name 
 .PHONY:  clean 
@@ -95,9 +94,23 @@ clean:
 	# danger, we will discard changes to the working directory now.  This assumes that the working dir was clean before make was called -- which is effed.
 	git checkout -- $<
 
+# this one is complex, the 
+#basic format of a 'rule' in Make is target : prerequisite
+%.png : %.pdf
+# the % is an automatic variable that will expand to represent all files ending with %.sch in this case
+# here the $@ and $< are called  'automatic variables', 
+# $@ is the target and $< is the prerequisite
+	convert -density 250x250 +antialias -negate $< $@ 
+	mv $@ $(REV).$@
+
+%.vdiff : %.png
+	composite -stereo 0 $1 $2 $@.png
+	
+
 # this following rule conflicts with the rule for schematics.  study make and figure out how to make it work
 #%.pdf : %.pcb
 #	pcb -x ps --psfile $@ $<
+
 #	ps2pdf $< $@
 # perhaps 
 #%.pdf : %.sch %.pcb  # rule has prerequisites for any %.sch and %.pcb files... hmm does it need both?
