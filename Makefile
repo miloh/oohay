@@ -71,7 +71,6 @@ SS=subcircuits
 # not sure if = is a good assignment operator or if =! or =: would be better
 DATE = $(shell date +"%b-%d-%Y")
 AUTHOR = $(shell git config --global -l | grep user.name | cut -d "=" -f2)
-#REV = $(shell git log -1 --format=%h)
 REV = $(shell git describe --tags --long)
 STATUS= $(shell git status -z -uno)
 # what follows is a rule for cleaning up backup files out of project dirs 
