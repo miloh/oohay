@@ -1,5 +1,6 @@
 #makefile for gaf-geda
 
+# insert a line!
 #
 #'make clean' cleans up backup files 
 #'make projectname.pdf' exports any schematic files in the makefile directory to pdf 
@@ -70,8 +71,8 @@ SS=subcircuits
 # not sure if = is a good assignment operator or if =! or =: would be better
 DATE = $(shell date +"%b-%d-%Y")
 AUTHOR = $(shell git config --global -l | grep user.name | cut -d "=" -f2)
-#REV = $(shell git log -1 --format=%h)
-REV = $(shell git describe --tags --long)
+REV = $(shell git log -1 --format=%h)
+TAG = $(shell git describe --tags --long)
 STATUS= $(shell git status -z -uno)
 # what follows is a rule for cleaning up backup files out of project dirs 
 # .PHONY prevents rules from becoming disabled if files exist with the same name 
@@ -93,7 +94,7 @@ ifeq ($(STATUS),)
 	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
 	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
 	sed -i "s/\(fname=\).*/\1$@/" $<
-	sed -i "s/\(rev=\).*/\1$\$(REV)/" $<
+	sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $<
 	#TEMPFILE := ${shell mktemp $(NAME)-sch-XXXX}
 	gaf export -o $@ -- $<
 	# danger, we will discard changes to the working directory now.  This assumes that the working dir was clean before make was called -- which is effed.
