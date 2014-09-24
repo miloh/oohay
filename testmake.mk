@@ -28,7 +28,8 @@ test:
 clean:
 	rm -f *~ *- *.backup *.new.pcb *.png *.bak *.gbr *.cnc *.ps
 
-
+.PHONY: all
+all:
 ifneq ($(FORCE),YES)
  ifneq ($(STATUS),)
  $(error error: bad working state -- clean working state and try again or use override)
