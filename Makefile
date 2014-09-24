@@ -92,7 +92,7 @@ else
 ifeq ($(REV),)
 $(error error: revision history has no tags to work with, add one and try again)
 endif
-	@$(foreach asset, $(pcb-assets), pcb -x ps --psfile pcb.$(REV).$@ $(asset);)
+	$(foreach asset, $(pcb-assets), pcb -x ps --psfile pcb.$(REV).$@ $(asset);)
 
 # the following sed replacements work on variables found in CVS title blocks for gschem
 	sed -i "s/\(date=\).*/\1$\$(DATE)/"  $(schematic-assets)
