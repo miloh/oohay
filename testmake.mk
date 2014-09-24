@@ -18,11 +18,11 @@ STATUS = $(shell git status -z -uno)
 CHECKINS = $(shell git status --porcelain *.pcb *.sch)
 
 
-pcb-assets = $(wildcard *.pcb)
-schematic-assets = $(wildcard *.sch)
+pcb-files = $(wildcard *.pcb)
+schematic-files = $(wildcard *.sch)
 .PHONY: test
 test:
-	@$(foreach asset, $(pcb-assets), echo $(asset);)
+	@$(foreach asset, $(pcb-files), echo $(asset);)
 
 .PHONY:  clean
 clean:
@@ -42,10 +42,10 @@ ifneq ($(FORCE),YES)
  endif
 endif
 
-%.ps : %.pcb
-	pcb -x ps --psfile pcb.$(REV).$@ $<
+pcb-assets : %.pcb 
+	pcb -x ps --psfile $@ $(REV). $(pcb-assets)
 
-%.ps : $(sch-assets)
+sch-assets : %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
 	sed -i "s/\(date=\).*/\1$\$(DATE)/"  $(schematic-assets)
 	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $(schematic-assets)
