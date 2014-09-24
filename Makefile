@@ -77,7 +77,7 @@ schematic-assets = $(wildcard *.sch)
 .PHONY:  clean
 #basic format of a 'rule' in Make is target : prerequisite
 clean:
-	rm -f *~ *- *.backup *.new.pcb *.png *.bak *.gbr *.cnc
+	rm -f *~ *- *.backup *.new.pcb *.png *.bak *.gbr *.cnc *.ps
 # this rule has no prerequisite
 # this rule calls the 'rm' utility in the shell, note the tab spacing
 
