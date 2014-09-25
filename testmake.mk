@@ -42,16 +42,17 @@ ifneq ($(FORCE),YES)
  $(error error: revision history has no tags to work with, add one and try again)
  endif
 endif
-
+# $@  is the automatic variable for the prerequisite
+# $<  is the automatic variable for the target
 %.ps :: %.pcb 
-	pcb -x ps --psfile $@ $(REV). $(pcb-assets)
+	pcb -x ps --psfile $@-$(REV).ps $<
 
 %.ps :: %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
-	sed -i "s/\(date=\).*/\1$\$(DATE)/"  $(schematic-assets)
-	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $(schematic-assets)
-	sed -i "s/\(fname=\).*/\1$@/" $(schematic-assets)
-	sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $(schematic-assets)
+	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
+	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
+	sed -i "s/\(fname=\).*/\1$@/" $<
+	sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $<
 #TEMPFILE := ${shell mktemp $(NAME)-sch-XXXX}
-	gaf export -o sch-$(REV).$@  -- $(schematic-assets)
+	gaf export -o sch-$(REV).$@  -- $<
 # danger, we will discard changes to the schematic file in the working directory now.  This assumes that the working dir was clean before make was called and should be rewritten as an atomic operation
