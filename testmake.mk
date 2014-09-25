@@ -42,10 +42,10 @@ ifneq ($(FORCE),YES)
  endif
 endif
 
-pcb-assets : %.pcb 
+pcb%.ps : %.pcb 
 	pcb -x ps --psfile $@ $(REV). $(pcb-assets)
 
-sch-assets : %.sch
+sch%.ps : %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
 	sed -i "s/\(date=\).*/\1$\$(DATE)/"  $(schematic-assets)
 	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $(schematic-assets)
