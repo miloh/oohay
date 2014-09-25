@@ -1,57 +1,5 @@
 #makefile for gaf-geda
 
-# insert a line!
-#
-#'make clean' cleans up backup files 
-#'make projectname.ps' exports any schematic files in the makefile directory to ps
-#and uses shell cmds and assumes git to apply version author date and filename info 
-#'make renum' run refdes_renum on the target.
-#'make gerbers'
-#'make bom' a bom is a list of all parts in the project
-#'make partslist'  a partslist consolidates the parts used in quantity
-## parts of this makefile are inspired by Nixotic Design's gEDA-tools Makefile
-
-# Q: why use git?
-#
-# git provides an agnostic and free libre version control
-# system for collaborative HW engineering workflows. The end goal is to develop
-# a comprehensive FLOSS non-cloud dependent PLM system
-#
-# Q:why use make?  
-#
-# make is commonly available as a requirement for any embedded engs to understand 
-# with fluency hopefully this functionality doesn't stop with make and the cli
-# 
-# Q:why not use kicad?
-# 
-# kicad is great and folks should also describe how to use it with a  
-# version control system
-
-# todos
-# target for numbering/annotating  the symbols uses refdes_renum
-# fix target for pcb layout documentation output:
-# gschem and pcb are used to create postscript files  '.ps' 
-# target for making oshpark gerbers
-# target for making custom gerbers
-#the problem with the makefile in this directory is that it is super specific to this project.
-#shouldn't it be a bit generic?
-#'make photo' make render images out of the layout
-#'make layout.pdf' exports any %.pcb in the makefile dir to pdf using the rules  
-
-# assumes a project is version controlled with git and the .sch and .pcb files
-# are in the main directory with submodules for gaf-sym and gaf-fp below them.
-
-# /projectname/ 
-# /projectname/Makefile
-# /projectname/gafrc
-# /projectname/*.sch 
-# /projectname/*.pcb 
-# /projectname/sym  local symbols dir or git submodule
-# /projectname/fp   local footprint dir or git submodule
-# /projectname/gaf-symbols/    expected  as git submdoule 
-# /projectname/gaf-fooptrints/  expected as git submodule
-
-
 # Input DIR using this directory structure cleans things upS
 NAME= oohay
 
@@ -60,101 +8,52 @@ PCB=pcb
 SYM=gaf-symbols
 FP=gaf_footprints
 SS=subcircuits
-
-# the following vars assume git is being used for version control
+FORCE=NO
 # variables using the Make builtin shell expression/expansion
 # not sure if = is a good assignment operator or if =! or =: would be better
 DATE = $(shell date +"%b-%d-%Y")
 AUTHOR = $(shell git config --global -l | grep user.name | cut -d "=" -f2)
 REV = $(shell git describe --tags --long)
-STATUS= $(shell git status -z -uno)
+STATUS = $(shell git status -z -uno)
+CHECKINS = $(shell git status --porcelain *.pcb *.sch)
 
-pcb-assets = $(wildcard *.pcb)
-schematic-assets = $(wildcard *.sch)
-# what follows is a rule for cleaning up backup files out of project dirs
-# and building basic assets based on a specific commit
-# .PHONY prevents rules from becoming disabled if files exist with the same name 
+
+pcb-files = $(wildcard *.pcb)
+schematic-files = $(wildcard *.sch)
+.PHONY: test
+test:
+	@$(foreach asset, $(pcb-files), echo $(asset);)
+	@$(foreach asset, $(schematic-files), echo $(asset);)
+
 .PHONY:  clean
-#basic format of a 'rule' in Make is target : prerequisite
 clean:
 	rm -f *~ *- *.backup *.new.pcb *.png *.bak *.gbr *.cnc *.ps
-# this rule has no prerequisite
-# this rule calls the 'rm' utility in the shell, note the tab spacing
 
-# here the $@ and $< are called  'automatic variables',
-# $@ is the target and $< is the prerequisite
-
-#the basic format of a 'rule' in Make is target : prerequisite
-%.ps : $(pcb-assets) $(schematic-assets)
-ifneq ($(STATUS),)
-$(error error: bad working state -- clean working state and try again)
-else
-ifeq ($(REV),)
-$(error error: revision history has no tags to work with, add one and try again)
+.PHONY: all
+all:
+ifneq ($(FORCE),YES)
+ ifneq ($(STATUS),)
+ $(error error: bad working state -- clean working state and try again or use override)
+ endif
+ ifneq ($(CHECKINS),)
+ $(error error: untracked schematic or pcb content, add content or use override)
+ endif
+ ifeq ($(REV),)
+ $(error error: revision history has no tags to work with, add one and try again)
+ endif
 endif
-	$(foreach asset, $(pcb-assets), pcb -x ps --psfile pcb.$(REV).$@ $(asset);)
+# $@  is the automatic variable for the prerequisite
+# $<  is the automatic variable for the target
+%.pcb.ps : %.pcb 
+	pcb -x ps --psfile $(REV)-$@ $<
 
+%.sch.ps : %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
-	sed -i "s/\(date=\).*/\1$\$(DATE)/"  $(schematic-assets)
-	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $(schematic-assets)
-	sed -i "s/\(fname=\).*/\1$@/" $(schematic-assets)
-	sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $(schematic-assets)
+	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
+	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
+	sed -i "s/\(fname=\).*/\1$@/" $<
+	sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $<
 #TEMPFILE := ${shell mktemp $(NAME)-sch-XXXX}
-	gaf export -o sch-$(REV).$@  -- $(schematic-assets)
+	gaf export -o $(REV)-$@  -- $<
 # danger, we will discard changes to the schematic file in the working directory now.  This assumes that the working dir was clean before make was called and should be rewritten as an atomic operation
-	git checkout -- $(pcb-assets) $(schematic-assets)
-endif
-#again, the
-#basic format of a 'rule' in Make is target : prerequisite
-%.png : %.ps
-# the rule above is an pattern rule that expands % to represent the names for all files ending with '.sch'
-# here the $@ and $< are called  'automatic variables',
-# $@ is the target and $< is the prerequisite
-	convert -density 250x250 +antialias -negate $< $@
-	mv $@ $(REV).$@
-
-%.vdiff : %.png
-	composite -stereo 0 $1 $2 $@.png
-
-# this following rule conflicts with the rule for schematics.  study make and figure out how to make it work
-
-#	ps2pdf $< $@
-# perhaps 
-#%.pdf : %.sch %.pcb  # rule has prerequisites for any %.sch and %.pcb files... hmm does it need both?
-
-# ps2pdf conversion to pdf
-%.pdf :  %.ps
-	ps2pdf $< $@
-
-renum : $(NAME).sch
-	refdes_renum $(NAME).sch
-
-%.bom : %.sch renum
-	gnetlist -g partslist3 -o $@ $<
-
-
-.PHONY : gerbers
-# rule for making generic gerbers
-gerbers :$(NAME).pcb  $(NAME).bom
-	rm -rf gerbers
-	mkdir gerbers
-	pcb -x gerber --gerberfile gerbers/$(NAME) $<
-
-gerbers.zip : gerbers
-	rm -f $@
-	zip -j $@ gerbers/*
-
-.PHONY : osh-park-gerbers
-osh-park-gerbers : gerbers
-	mkdir -p $@
-	cp gerbers/$(name).top.gbr "$@/Top Layer.ger"
-	cp gerbers/$(name).bottom.gbr "$@/Bottom Layer.ger"
-	cp gerbers/$(name).topmask.gbr "$@/Top Solder Mask.ger"
-	cp gerbers/$(name).bottommask.gbr "$@/Bottom Solder Mask.ger"
-	cp gerbers/$(name).topsilk.gbr "$@/Top Silk Screen.ger"
-	cp gerbers/$(name).bottomsilk.gbr "$@/Bottom Silk Screen.ger"
-	cp gerbers/$(name).outline.gbr "$@/Board Outline.ger"
-
-osh-park-gerbers.zip : osh-park-gerbers
-	rm -f $@
-	zip -j $@ osh-park-gerbers/*
+	git checkout -- $<
