@@ -44,10 +44,10 @@ ifneq ($(FORCE),YES)
 endif
 # $@  is the automatic variable for the prerequisite
 # $<  is the automatic variable for the target
-%pcb.ps : %.pcb 
+%.pcb.ps : %.pcb 
 	pcb -x ps --psfile $(REV)-$@ $<
 
-%sch.ps : %.sch
+%.sch.ps : %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
 	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
 	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
