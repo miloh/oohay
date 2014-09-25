@@ -43,7 +43,7 @@ endif
 # $@  is the automatic variable for the prerequisite
 # $<  is the automatic variable for the target
 ps : 
-	@$(foreach asset, $(pcb-files), pcb -x ps --psfile $(REV)-pcb.$@ $(asset);) 
+	@$(foreach asset, $(pcb-files), pcb -x ps --psfile $(REV)-$(asset).$@ $(asset);) 
 
 # the following sed replacements work on variables found in CVS title blocks for gschem
 	$(foreach asset, $(schematic-files), sed -i "s/\(date=\).*/\1$\$(DATE)/" $(asset);sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $(asset); sed -i "s/\(fname=\).*/\1$@/" $(asset); sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $(asset); gaf export -o $(REV)-$(asset).$@  -- $(asset); git checkout -- $(asset);)
