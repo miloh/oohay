@@ -8,7 +8,7 @@ PCB=pcb
 SYM=gaf-symbols
 FP=gaf_footprints
 SS=subcircuits
-FORCE=YES
+FORCE=NO
 # variables using the Make builtin shell expression/expansion
 # not sure if = is a good assignment operator or if =! or =: would be better
 DATE = $(shell date +"%b-%d-%Y")
