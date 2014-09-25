@@ -47,7 +47,7 @@ endif
 %.ps :: %.pcb 
 	pcb -x ps --psfile $@-$(REV).ps $<
 
-%.ps :: %.sce
+%.ps :: %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
 	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
 	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
