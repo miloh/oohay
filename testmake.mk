@@ -23,6 +23,7 @@ schematic-files = $(wildcard *.sch)
 .PHONY: test
 test:
 	@$(foreach asset, $(pcb-files), echo $(asset);)
+	@$(foreach asset, $(schematic-files), echo $(asset);)
 
 .PHONY:  clean
 clean:
