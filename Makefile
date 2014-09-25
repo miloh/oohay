@@ -8,7 +8,7 @@ PCB=pcb
 SYM=gaf-symbols
 FP=gaf_footprints
 SS=subcircuits
-FORCE=NO
+FORCE=YES
 # variables using the Make builtin shell expression/expansion
 # not sure if = is a good assignment operator or if =! or =: would be better
 DATE = $(shell date +"%b-%d-%Y")
@@ -20,17 +20,15 @@ CHECKINS = $(shell git status --porcelain *.pcb *.sch)
 
 pcb-files = $(wildcard *.pcb)
 schematic-files = $(wildcard *.sch)
-.PHONY: test
-test:
+.PHONY: list-gedafiles clean
+clean:
+	rm -f *~ *- *.backup *.new.pcb *.png *.bak *.gbr *.cnc *.ps
+list-gedafiles:
 	@$(foreach asset, $(pcb-files), echo $(asset);)
 	@$(foreach asset, $(schematic-files), echo $(asset);)
 
-.PHONY:  clean
-clean:
-	rm -f *~ *- *.backup *.new.pcb *.png *.bak *.gbr *.cnc *.ps
-
 .PHONY: all
-all:
+all: s
 ifneq ($(FORCE),YES)
  ifneq ($(STATUS),)
  $(error error: bad working state -- clean working state and try again or use override)
@@ -44,16 +42,9 @@ ifneq ($(FORCE),YES)
 endif
 # $@  is the automatic variable for the prerequisite
 # $<  is the automatic variable for the target
-%.pcb.ps : %.pcb 
-	pcb -x ps --psfile $(REV)-$@ $<
+ps : 
+	@$(foreach asset, $(pcb-files), pcb -x ps --psfile $(REV)-pcb.$@ $(asset);) 
 
-%.sch.ps : %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
-	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
-	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
-	sed -i "s/\(fname=\).*/\1$@/" $<
-	sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $<
-#TEMPFILE := ${shell mktemp $(NAME)-sch-XXXX}
-	gaf export -o $(REV)-$@  -- $<
+	$(foreach asset, $(schematic-files), sed -i "s/\(date=\).*/\1$\$(DATE)/" $(asset);sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $(asset); sed -i "s/\(fname=\).*/\1$@/" $(asset); sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $(asset); gaf export -o $(REV)-$(asset).$@  -- $(asset); git checkout -- $(asset);)
 # danger, we will discard changes to the schematic file in the working directory now.  This assumes that the working dir was clean before make was called and should be rewritten as an atomic operation
-	git checkout -- $<
