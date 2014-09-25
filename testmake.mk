@@ -44,16 +44,16 @@ ifneq ($(FORCE),YES)
 endif
 # $@  is the automatic variable for the prerequisite
 # $<  is the automatic variable for the target
-%.ps :: %.pcb 
-	pcb -x ps --psfile $@-$(REV).ps $<
+%pcb.ps : %.pcb 
+	pcb -x ps --psfile $(REV)-$@ $<
 
-%.ps :: %.sch
+%sch.ps : %.sch
 # the following sed replacements work on variables found in CVS title blocks for gschem
 	sed -i "s/\(date=\).*/\1$\$(DATE)/" $< 
 	sed -i "s/\(auth=\).*/\1$\$(AUTHOR)/" $<
 	sed -i "s/\(fname=\).*/\1$@/" $<
 	sed -i "s/\(rev=\).*/\1$\$(REV) $\$(TAG)/" $<
 #TEMPFILE := ${shell mktemp $(NAME)-sch-XXXX}
-	gaf export -o sch-$(REV).$@  -- $<
+	gaf export -o $(REV)-$@  -- $<
 # danger, we will discard changes to the schematic file in the working directory now.  This assumes that the working dir was clean before make was called and should be rewritten as an atomic operation
 	git checkout -- $<
