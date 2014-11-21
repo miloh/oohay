@@ -28,7 +28,7 @@ list-gedafiles:
 	@$(foreach asset, $(schematic-files), echo $(asset);)
 
 .PHONY: all
-all: s
+all:
 ifneq ($(FORCE),YES)
  ifneq ($(STATUS),)
  $(error error: bad working state -- clean working state and try again or use override)
