@@ -24,10 +24,9 @@ schematic-files = $(wildcard *.sch)
 list-gedafiles:
 	@$(foreach asset, $(pcb-files), echo $(asset);)
 	@$(foreach asset, $(schematic-files), echo $(asset);)
-.PHONE: all clean
-all:
+ps:
 ifneq ($(FORCE),YES)
- ifneq ($(STATUS),)
+ ifneq ($(strip$(STATUS)),)
  $(error error: bad working state -- clean working state and try again or use override)
  endif
  ifneq ($(CHECKINS),)
@@ -39,7 +38,6 @@ ifneq ($(FORCE),YES)
 endif
 # $@  is the automatic variable for the prerequisite
 # $<  is the automatic variable for the target
-ps : 
 	@$(foreach asset, $(pcb-files), pcb -x ps --psfile $(REV)-$(asset).$@ $(asset);) 
 
 # the following sed replacements work on variables found in CVS title blocks for gschem
