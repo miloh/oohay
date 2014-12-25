@@ -787,9 +787,35 @@ Symbol['~' 12.00mil]
 )
 Layer(1 "top")
 (
+	Line[560.00mil 1100.00mil 560.00mil 1740.00mil 40.00mil 20.00mil "clearline"]
+	Line[560.00mil 1740.00mil 530.00mil 1770.00mil 40.00mil 20.00mil "clearline"]
+	Line[530.00mil 1770.00mil 830.00mil 1770.00mil 40.00mil 20.00mil "clearline"]
+	Line[830.00mil 1770.00mil 840.00mil 1760.00mil 40.00mil 20.00mil "clearline"]
+	Line[840.00mil 1760.00mil 840.00mil 1190.00mil 40.00mil 20.00mil "clearline"]
+	Line[840.00mil 1190.00mil 820.00mil 1170.00mil 40.00mil 20.00mil "clearline"]
+	Line[820.00mil 1170.00mil 990.00mil 1170.00mil 40.00mil 20.00mil "clearline"]
+	Line[990.00mil 1170.00mil 1040.00mil 1120.00mil 40.00mil 20.00mil "clearline"]
+	Line[1040.00mil 1120.00mil 1040.00mil 1500.00mil 40.00mil 20.00mil "clearline"]
+	Line[1040.00mil 1500.00mil 1190.00mil 1650.00mil 40.00mil 20.00mil "clearline"]
+	Line[1190.00mil 1650.00mil 1190.00mil 1350.00mil 40.00mil 20.00mil "clearline"]
+	Line[1190.00mil 1350.00mil 1390.00mil 1150.00mil 40.00mil 20.00mil "clearline"]
+	Line[1390.00mil 1150.00mil 1400.00mil 1150.00mil 40.00mil 20.00mil "clearline"]
+	Line[1400.00mil 1150.00mil 1590.00mil 1340.00mil 40.00mil 20.00mil "clearline"]
+	Line[1590.00mil 1340.00mil 1590.00mil 1730.00mil 40.00mil 20.00mil "clearline"]
+	Line[1590.00mil 1730.00mil 1510.00mil 1810.00mil 40.00mil 20.00mil "clearline"]
+	Line[1510.00mil 1810.00mil 1510.00mil 1590.00mil 40.00mil 20.00mil "clearline"]
+	Line[1510.00mil 1590.00mil 1340.00mil 1420.00mil 40.00mil 20.00mil "clearline"]
+	Line[1340.00mil 1420.00mil 1340.00mil 1350.00mil 40.00mil 20.00mil "clearline"]
+	Line[1340.00mil 1350.00mil 1390.00mil 1300.00mil 40.00mil 20.00mil "clearline"]
+	Line[480.00mil 980.00mil 1780.00mil 980.00mil 40.00mil 20.00mil "clearline"]
+	Line[1780.00mil 980.00mil 1810.00mil 1010.00mil 40.00mil 20.00mil "clearline"]
+	Line[1810.00mil 1010.00mil 1810.00mil 1770.00mil 40.00mil 20.00mil "clearline"]
+	Line[1810.00mil 1770.00mil 1640.00mil 1940.00mil 40.00mil 20.00mil "clearline"]
+	Line[1640.00mil 1940.00mil 740.00mil 1940.00mil 40.00mil 20.00mil "clearline"]
+	Line[740.00mil 1940.00mil 670.00mil 2010.00mil 40.00mil 20.00mil "clearline"]
 	Polygon("clearpoly")
 	(
-		[400.00mil 440.00mil] [1320.00mil 440.00mil] [1320.00mil 1340.00mil] [400.00mil 1340.00mil] 
+		[340.00mil 860.00mil] [2000.00mil 860.00mil] [2000.00mil 2060.00mil] [340.00mil 2060.00mil] 
 	)
 )
 Layer(2 "ground")
